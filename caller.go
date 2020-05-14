@@ -45,5 +45,5 @@ func GetCaller(skip int) *CallerInfo {
 // Caller returns caller info about the immediate parent caller of the
 // calling function.
 func Caller() *CallerInfo {
-	return GetCaller(0)
+	return GetCaller(1)
 }
