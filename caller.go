@@ -28,15 +28,22 @@ func NewCallerInfo(name, file string, line int) *CallerInfo {
 	}
 }
 
-// Caller returns caller info about the immediate parent caller of the
-// calling function, or nil if there's no info.
-func Caller() *CallerInfo {
+// GetCaller returns info about a calling function, with skip indicating
+// how many stack frames to skip (0 = immediate caller, 1 = caller's caller, etc.)
+// If the info cannot be retrieved, nil is returned.
+func GetCaller(skip int) *CallerInfo {
 	pc := make([]uintptr, 1)
-	if runtime.Callers(3, pc) > 0 {
+	if runtime.Callers(3+skip, pc) > 0 {
 		if f := runtime.FuncForPC(pc[0] - 1); f != nil {
 			file, line := f.FileLine(pc[0] - 1)
 			return NewCallerInfo(f.Name(), file, line)
 		}
 	}
 	return nil
+}
+
+// Caller returns caller info about the immediate parent caller of the
+// calling function.
+func Caller() *CallerInfo {
+	return GetCaller(0)
 }
